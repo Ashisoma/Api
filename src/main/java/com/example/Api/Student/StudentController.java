@@ -1,11 +1,9 @@
 package com.example.Api.Student;
 
-import com.example.Api.Student.Student;
+import com.example.Api.entity.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.Month;
 import java.util.List;
 
 @RestController
@@ -24,20 +22,34 @@ public class StudentController {
         return studentService.getStudents();
     }
 
-    @PostMapping
-    public void registerNewStudent(@RequestBody Student student){
+    @GetMapping("/nameAndEqualAge")
+    public List<Student> getWIthAgeAndNameStudents(@RequestParam(required = false)String firstName,
+                                                   @RequestParam(required = false)Integer age){
+        return studentService.getStudentWithAgeGreaterThanOrEqualTo(firstName, age);
+    }
+
+
+    @GetMapping("/nameAndNativeAge")
+    public List<Student> getWithNativeAgeAndNameStudents(@RequestParam(required = false)String firstName,
+                                                         @RequestParam(required = false)Integer age){
+        return studentService.getStudentWithAgeGreaterThanOrEqualNative(firstName, age);
+    }
+
+    @PostMapping("/add")
+    public void registerNewStudent(@RequestBody(required = false) Student student){
         studentService.addNewStudent(student);
     }
 
-    @DeleteMapping(path = "{studentId")
+    @DeleteMapping(path = "/delete/{studentId}")
     public void deleteStudents(@PathVariable("studentId") Long studentId){
         studentService.deleteStudent(studentId);
     }
 
-    @PutMapping(path = "{studentId}")
+    @PutMapping(path = "/update/{studentId}")
     public  void updateStudentById(@PathVariable("studentId") Long studentId,
-                                   @RequestParam(required = false) String name,
+                                   @RequestParam(required = false) String fname,
+                                   @RequestParam(required = false) String sname,
                                    @RequestParam(required = false) String email){
-        studentService.updateStudent(studentId, name, email);
+        studentService.updateStudent(studentId, fname,sname, email);
     }
 }

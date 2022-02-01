@@ -1,5 +1,7 @@
 package com.example.Api.Student;
 
+import com.example.Api.entity.Student;
+import com.example.Api.repo.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,11 +24,20 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
-    public void addNewStudent(Student student) {
+    public List<Student> getStudentWithAgeGreaterThanOrEqualTo(String firstName, Integer age){
+        return studentRepository.selectStudentWhereFirstNameAndAgeGreaterOrEqual(firstName, age);
+    }
 
+    public List<Student> getStudentWithAgeGreaterThanOrEqualNative(String firstName, Integer age){
+        return studentRepository.selectStudentWhereFirstNameAndAgeGreaterOrEqualNative(firstName, age);
+    }
+
+    public int deleteStudentById(Long id){
+        return studentRepository.deleteStudentById(id);
+    }
+    public void addNewStudent(Student student) {
         Optional<Student> studentByEmail = studentRepository.
                 findStudentByEmail(student.getEmail());
-
         if(studentByEmail.isPresent()){
             throw new IllegalStateException("Email already exists");
         }
@@ -44,12 +55,16 @@ public class StudentService {
     }
 
     @Transactional
-    public void updateStudent(Long studentId, String name, String email) {
+    public void updateStudent(Long studentId, String fname, String sname, String email) {
         Student student = studentRepository.findById(studentId).orElseThrow( () ->
                 new IllegalStateException("Student with id :" + studentId + "does not exist"));
-        if (name != null && name.length()>0 && !Objects.equals(student.getName(),name))
+        if (fname != null && fname.length()>0 && !Objects.equals(student.getFirstName(),fname))
         {
-            student.setName(name);
+            student.setFirstName(fname);
+        }
+        if (sname != null && sname.length()>0 && !Objects.equals(student.getSecondName(),sname))
+        {
+            student.setSecondName(sname);
         }
         if (email != null && email.length()>0 && !Objects.equals(student.getEmail(),email)){
             Optional<Student> studentOptional = studentRepository.findStudentByEmail(email);
